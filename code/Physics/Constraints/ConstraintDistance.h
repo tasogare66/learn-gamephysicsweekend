@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "ConstraintBase.h"
-
+#if 0
 /*
 ================================
 ConstraintDistance
@@ -28,3 +28,4 @@ private:
 	VecN m_cachedLambda;
 	float m_baumgarte;
 };
+#endif

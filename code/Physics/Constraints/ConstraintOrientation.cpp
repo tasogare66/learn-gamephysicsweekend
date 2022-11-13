@@ -2,7 +2,7 @@
 //  ConstraintOrientation.cpp
 //
 #include "ConstraintOrientation.h"
-
+#if 0
 /*
 ================================
 ConstraintOrientation::PreSolve
@@ -20,3 +20,4 @@ ConstraintOrientation::Solve
 void ConstraintOrientation::Solve() {
 	// TODO: Add code
 }
+#endif

@@ -9,7 +9,7 @@
 #include "../../Math/LCP.h"
 #include "../Body.h"
 #include <vector>
-
+#if 0
 /*
 ====================================================
 Constraint
@@ -100,3 +100,4 @@ inline Mat4 Constraint::Right( const Quat & q ) {
 
 	return R.Transpose();
 }
+#endif

@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "ConstraintBase.h"
-
+#if 0
 /*
 ================================
 ConstraintMotor
@@ -28,3 +28,4 @@ public:
 
 	Vec3 m_baumgarte;
 };
+#endif

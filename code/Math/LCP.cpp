@@ -2,7 +2,7 @@
 //	LCP.cpp
 //
 #include "LCP.h"
-
+#if 0
 /*
 ====================================================
 LCP_GaussSeidel
@@ -23,3 +23,4 @@ VecN LCP_GaussSeidel( const MatN & A, const VecN & b ) {
 	}
 	return x;
 }
+#endif

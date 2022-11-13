@@ -3,7 +3,7 @@
 //
 #include "ConstraintMotor.h"
 
-
+#if 0
 /*
 ================================
 ConstraintMotor::PreSolve
@@ -21,3 +21,4 @@ ConstraintMotor::Solve
 void ConstraintMotor::Solve() {
 	// TODO: Add code
 }
+#endif

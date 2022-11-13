@@ -2,7 +2,7 @@
 //  ConstraintPenetration.cpp
 //
 #include "ConstraintPenetration.h"
-
+#if 0
 /*
 ================================
 ConstraintPenetration::PreSolve
@@ -20,3 +20,4 @@ ConstraintPenetration::PreSolve
 void ConstraintPenetration::Solve() {
 	// TODO: Add code
 }
+#endif

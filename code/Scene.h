@@ -24,7 +24,7 @@ public:
 	void Update( const float dt_sec );	
 
 	std::vector< Body > m_bodies;
-	std::vector< Constraint * >	m_constraints;
+	//std::vector< Constraint * >	m_constraints;
 	ManifoldCollector m_manifolds;
 };
 

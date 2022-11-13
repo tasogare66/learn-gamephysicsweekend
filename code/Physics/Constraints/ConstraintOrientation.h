@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "ConstraintBase.h"
-
+#if 0
 /*
 ================================
 ConstraintOrientation
@@ -24,3 +24,4 @@ public:
 
 	float m_baumgarte;
 };
+#endif

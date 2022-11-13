@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "ConstraintBase.h"
-
+#if 0
 /*
 ================================
 ConstraintPenetration
@@ -28,3 +28,4 @@ public:
 	float m_baumgarte;
 	float m_friction;
 };
+#endif

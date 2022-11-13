@@ -34,7 +34,7 @@ private:
 	Body * m_bodyA;
 	Body * m_bodyB;
 
-	ConstraintPenetration m_constraints[ MAX_CONTACTS ];
+	//ConstraintPenetration m_constraints[ MAX_CONTACTS ];
 
 	friend class ManifoldCollector;
 };

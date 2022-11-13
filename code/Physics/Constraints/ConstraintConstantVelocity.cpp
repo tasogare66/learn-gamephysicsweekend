@@ -10,7 +10,7 @@ ConstraintConstantVelocity
 
 ================================================================
 */
-
+#if 0
 /*
 ================================
 ConstraintConstantVelocity::PreSolve
@@ -72,3 +72,4 @@ ConstraintConstantVelocityLimited::PostSolve
 void ConstraintConstantVelocityLimited::PostSolve() {
 	// TODO: Add code
 }
+#endif

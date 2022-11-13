@@ -10,7 +10,7 @@ ConstraintHingeQuat
 
 ================================================================
 */
-
+#if 0
 /*
 ================================
 ConstraintHingeQuat::PreSolve
@@ -72,3 +72,4 @@ ConstraintHingeQuatLimited::PostSolve
 void ConstraintHingeQuatLimited::PostSolve() {
 	// TODO: Add code
 }
+#endif

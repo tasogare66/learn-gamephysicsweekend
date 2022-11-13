@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "ConstraintBase.h"
-
+#if 0
 /*
 ====================================================
 ConstraintMoverSimple
@@ -17,3 +17,4 @@ public:
 
 	float m_time;
 };
+#endif

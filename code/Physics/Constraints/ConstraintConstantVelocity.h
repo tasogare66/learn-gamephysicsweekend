@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "ConstraintBase.h"
-
+#if 0
 /*
 ================================
 ConstraintConstantVelocity
@@ -58,3 +58,4 @@ public:
 	float m_angleU;
 	float m_angleV;
 };
+#endif

@@ -1,0 +1,271 @@
+vec3,vec3
+GetOrtho
+
+vulkanそのままビルドできる
++z-axis is up, 右手系
+
+p23まで、
+vec3,vec4
+mat3,mat4
+quat
+
+5
+Bodies
+vec3とquat, Shape
+本では,sphereのみ
+
+Scene に Body を 追加
+
+ここまでで、hello world
+
+5.1
+scene
+initializeで初期状態のbodiesをつくる、updateは1frameで一回以上呼ばれるdt_sec の値は 0.016 秒以下
+
+5.2
+Body Space and world space
+ワールド空間の点をローカル空間に変換する関数が必要です。また、ローカル空間からワールド空間へ変換する関数も必要です。
+モデル空間はジオメトリの原点、ボディ空間は質量中心を中心とした空間、sphereでは一致
+
+shape classに質量中心を追加
+
+6 Gravity
+重力加速度は近似して、10m/s2、BodyにlinearVelocity を追加、回転速度は後ほど
+Sceneのupdateで、velocityにgravityを加えて、bodyの位置を更新
+
+キーボードT pause
+キーボードR リセット
+
+7 Gravity as an Impulse - Masses and Impulses
+dv = J/m からインパルスからBodyのvelocity変化させる。ApplyImpuluseつくる
+重力も インパルスからApplyImpuluse で更新する。
+質量はinvMassで保持する、無限の質量を表せる。0をいれると、重力に影響されなくなる。
+
+groundも半径1000 の大きな球
+
+8 Collision
+球と球の交差判定、Sceneのupdateで交差判定、ブルートフォース、交差したら速度を0にする。
+質量無限大のペアは交差判定しない。
+
+9 Contacts and Projection method
+射影法、投影法で相互干渉を解決する、接点と質量を用いて分離
+接点のデータ構造の定義
+ptOnA,ptOnBは bodyA,bodyBのcollisionポイント normalize AからBの位置のnormalize -> これは球だから?
+
+10 Conservation of Momentum (運動量保存)
+今速度は0にしているから、
+運動量保存とエネルギー保存の法則から
+
+運動量の変化からインパルス(力積)を求める。
+
+接触面の法線に沿ったものだけでよい。 したがって、法線に対する相対速度の成分を得るには、法線との内積を実行すればよい。
+
+ボールが跳ね返るようになる。
+
+11 Elasticity(弾性)
+運動エネルギーが完全に保存される衝突=弾性衝突
+運動エネルギーの一部がまたは全部が失われる衝突、非弾性衝突
+
+ϵ
+construction of restriction(返却,回復) バウンシネス、範囲は[0,1]
+それぞれのbodyが弾性 elasticity を持つ、どの弾性を使用するかは、ここでは、それぞれのelasticityを掛け合わせる。
+これは現実の世界で予想されることのかなり良い近似になるはず。
+
+12 Angular velocity(角速度)
+トルク と 角運動量
+
+Iは慣性テンソル、質量に似ている、角運動量の変化にどれだけ抵抗するかの尺度
+3x3の行列で、物体の質量分布から計算される、密度が一様なので
+
+物理シュミレーションでは、逆慣性テンソルだけ必要、(逆質量だけ保存するのと同様)
+だけど、理解するために慣性テンソルの取得をshapeクラスに追加する。
+
+shapeはmassを持っていないので、
+ボディから逆慣性テンソルを取得する。
+
+角インパルスの適用をbodyに追加する。
+角インパルスの適用で角速度をクランプするのが一般的、主にパフォーマンスのため
+
+線速度のクランプはこのシリーズではやってない、このシリーズではパフォーマンスの問題を引き起こすほど速く動くオブジェクトはない。
+
+13 General Impulses
+物体に加わるインパルスが質量の中心を通ることは殆どない。今回は質量密度が一様な物体だけをシュミレートするので、
+物体の質量中心は、物体の形状だけを基準にする。
+球体の重心は幾何学的な中心であるため、これまでBodyの位置を重心と同等に扱うことができました。
+インパルスはBodyの表面上に加えられる、位置とインパルス自体が分かっていると考えてよい。
+linear impulseはインパルスそのもの。angular impulseを求めるには、インパルスの位置が必要。
+
+角速度から向きを更新
+
+14 Add Angular Collision Impulse
+衝突時に計算されるインパルスには角速度が考慮されていないので、追加する。
+角速度は球形の衝撃インパルスにはあまり重要ではないが、
+
+15 Friction
+摩擦を接線方向の衝突として扱い、フレームごとにエネルギーの一部を取り除く
+インパルスを計算するために法線を使う代わりに、方向に対して接線速度を使う
+球が回るようになる。
+
+16 Continuous Collision Detection
+テレポーテーション
+連続衝突検出、物体の速度とフレームの時間ステップを考慮して、交差をチェックする。
+衝突した時刻も返す。カプセル
+
+相対速度を用いて単純化、この場合一方の物体は静止、もう一方はより動く。
+あとは、カプセルと球の衝突
+
+17 Time of Impact(TOI)
+time of impactでソートする。衝突を時間順に解決する。すすんだ時間だけbodyのupdateを行う。
+
+18 The Bounds Class
+境界,最小点と最大点を保存するだけ。
+
+19 Broadphase & Narrowphase
+sweep and prune
+ 1次元の場合、各ボディの境界を取得し、昇順の配列にソートします。そして、重なり合ったボディから単純に衝突のペアを作成する。
+(1,1,1)軸に投影するようにする。オブジェクトの速度も考慮する必要がある。
+※軸に投影、normalizeした軸vec の内積
+
+20 conclusion
+摩擦のあるボールのバウンド
+次は凸形状
+
+----------
+Game Physics: In One Weekend
+1. Overview
+Ray Tracing In One Weekend みたいなのの、剛体物理版みたいなの、
+Game Physics The Next Week, Game Physics The Rest of Your Life
+まである。
+自分のレンダラーがあるなら、そこでやるのが一番よさそう、なければスケルトンのコードとしてVulkanレンダラーが用意されている。
+Vulkanのレンダラーは,visual studio 2022でそのままbuild,実行できた。
+c++, +z-axis is up
+
+2-4. Vector, Matrix, Quat スケルトンのコードに含まれている。
+5. Bodies
+位置(Vec3),向き(Quat),形状(Shape) この本ではsphereのみ
+Sceneのinitializeで初期状態bodiesを作る。ここまでで、hello world
+SceneのUpdateで更新、1frameで一回以上呼ばれる。(プログラムでは2回)
+
+Body Space <-> World Space の変換する関数追加。Body Spaceは 重心が中心。
+
+6. Gravity
+重力加速度は近似して、10m/s2、BodyにlinearVelocity を追加、回転速度は後ほど
+SceneのUpdateで、Velocityにgravityを加えて、bodyの位置を更新
+ キーボードT pause
+ キーボードR リセット
+
+dv = J/m よりインパルスからBodyのVelocityを変化させる、ApplyImpuluseつくる
+重力の更新も インパルスからApplyIpulse で更新するようにする。
+質量はinvMassで保持する、無限の質量を表せる。0を入れると重力に影響されないように。
+groundも大きな球(半径1000)で表す。
+
+8. Collision
+球と球の交差判定、Sceneのupdateで交差判定、ブルートフォース、交差したらここでは速度を0にする。
+質量無限大のペアは交差判定しない。
+接触点のデータ構造を定義、interpenetrationを解決する。
+衝突する2つの物体の重心が変化しないように分離する、分離距離dをinvMassの比で離す。
+
+10. Conservation of Momentum
+運動量保存、運動エネルギー保存の法則から、衝突でのそれぞれの物体に与えるインパルス(運動量の変化)を求める。
+ResolveContactで、それぞれのbodyに、インパルスを与えてVelocityを変更する。
+Sphereが跳ね返るようになる。
+
+11. Elasticity(弾性)
+運動エネルギーが完全に保存される衝突=弾性衝突
+運動エネルギーの一部がまたは全部が失われる衝突、非弾性衝突
+それぞれのBodyが elasticity(ϵ)を持つ(バウンシネス、範囲は[0,1])、どの弾性を使用するかは、ここでは、それぞれのelasticityを掛け合わせる。
+前章のインパルスを変更する。
+
+12. Angular velocity
+Bodyから逆慣性テンソルを取得できるようにする。球体の慣性テンソルはここでは与えられる。
+トルク、角運動量から、角インパルスからBodyの角速度の変化させる、ApplyImpulseAngularを追加する。
+ワールド空間の逆慣性テンソルもBodyから取得できるようにする。
+
+13. General Impulses
+インパルスはBodyの表面に与えらえるので、位置とインパルスからBodyのlinear,angularのvelocityを更新する、ApplyImpulseを追加する。
+BodyのUpdateでlinearVelocity,angularVelocityから、position,angularVelocity,orientation を更新するようにする。
+
+衝突時のインパルス、角速度を考慮していないので、これを考慮するようにする。
+
+15. Friction
+摩擦を接線方向の衝突として扱い、フレームごとにエネルギーの一部を取り除く
+インパルスを計算するために法線を使う代わりに、接線速度を使う、求めたインパルスをApplyImpulseする。
+球が回るようになる。
+
+16. Continuous Collision Detection
+速く動くオブジェクトがジオメトリを通り抜けるテレポーテーション。
+物体の速度とフレームの時間ステップを考慮に入れて、交差チェック、衝突した時刻も返すようにする。
+相対速度を用いて単純化、カプセルと球の衝突、線分と球の衝突、解の公式を解いて衝突時刻も取得する。
+
+フレームのcontactの情報を、衝突時刻順に解決する。
+順次進んだ時間だけbodyのUpdateを行う。
+
+19. Broadphase & Narrowphase
+sweep and prune
+ 1次元の場合、各ボディの境界を取得し、昇順の配列にソートします。そして、重なり合ったボディから単純に衝突のペアを作成する。
+(1,1,1)軸に投影するようにする。オブジェクトの速度も考慮する必要がある。
+
+20. Conclusion
+摩擦のあるボールのバウンド、次は凸形状。
+
+以上
+
+----------
+Game Physics: In One Weekend
+1. Overview
+Ray Tracing In One Weekend みたいなのの、剛体物理版みたいなの、
+Game Physics The Next Week, Game Physics The Rest of Your Life
+まである。
+自分のレンダラーがあるなら、そこでやるのが一番よさそう、なければスケルトンのコードとしてVulkanレンダラーが用意されている。
+Vulkanのレンダラーは,visual studio 2022でそのままbuild,実行できた。
+
+2-4. Vector, Matrix, Quat スケルトンのコードに含まれている。
+5. Bodies
+位置(Vec3),向き(Quat),形状(Shape) この本ではsphereのみ
+ここまでで、hello world
+
+6. Gravity
+BodyにlinearVelocity を追加、SceneのUpdateで、Velocityにgravityを加えて、bodyの位置を更新
+インパルスからBodyのVelocityを変化させる、ApplyImpuluseつくる
+重力の更新も インパルスからApplyIpulse で更新するようにする。
+質量は逆数で保持する、無限の質量を表せる。
+
+8. Collision
+球と球の交差判定、ブルートフォース、交差したらここでは速度を0にする。
+接触点のデータ構造を定義、めり込みを解決する。
+
+10. Conservation of Momentum
+運動量保存、運動エネルギー保存の法則から、衝突で物体に与えるインパルスを求める。
+それぞれのbodyに、インパルスを与えてVelocityを変更する。
+球が跳ね返るようになる。
+
+11. 弾性
+弾性を考慮した、インパルスを求めるようにする。
+
+12. Angular velocity
+角インパルスからBodyの角速度の変化させる、ApplyImpulseAngularを追加する。
+球体の慣性テンソルはそういうものとして与えられる。
+
+13. General Impulses
+位置とインパルスからBodyの並進速度、角速度を更新する、ApplyImpulseを追加する。
+BodyのUpdateでorientation 等も更新するようにする。
+
+衝突時のインパルス、角速度も考慮するようにする。
+
+15. Friction
+衝突時にエネルギーの一部を取り除くインパルスとして計算する。
+球が回るようになる。
+
+16. Continuous Collision Detection
+速く動くオブジェクトがジオメトリを通り抜けるので、移動分を考慮して交差チェック、衝突時刻も返すようにする。
+
+接触時間でソートして、時間順に解決する。順次進んだ時間だけ全BodyのUpdaeを行う。
+
+19. Broadphase & Narrowphase
+sweep and prune
+バウンディングの始点と終点が重なっているペアのみ交差判定する
+
+20. Conclusion
+摩擦のあるボールのバウンド、次は凸形状。
+
+以上

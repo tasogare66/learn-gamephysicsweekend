@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "ConstraintBase.h"
-
+#if 0
 /*
 ================================
 ConstraintHingeQuat
@@ -54,3 +54,4 @@ public:
 	bool m_isAngleViolated;
 	float m_relativeAngle;
 };
+#endif
